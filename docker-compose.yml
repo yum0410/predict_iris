@@ -1,0 +1,37 @@
+version: '3'
+services:
+  ml_model:
+    container_name: predict_iris_ml_model
+    build:
+        context: .
+        dockerfile: Dockerfile_ML_model
+    tty: true
+    volumes:
+        - ./code/ML_model:/code
+    ports:
+        - "5001:5001"      
+    command: > 
+      bash -c "mkdir -p /share/mlflow
+      && python /code/create_model.py
+      && mlflow models serve -m /share/mlflow/0/*/artifacts/dicision_tree/ --host localhost --port 5001 --no-conda
+      "
+  rest_api:
+    container_name: predict_iris_django_rest_api
+    build:
+        context: .
+        dockerfile: Dockerfile_Django_REST_API
+    tty: true
+    volumes:
+      - ./code/Django_REST_API:/code
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "cp /code/predict_iris/models.py /django_rest_framework/predict_iris/models.py
+      && cp /code/django_rest_framework/settings.py /django_rest_framework/django_rest_framework/settings.py
+      && python manage.py makemigrations
+      && python manage.py migrate
+      && python manage.py createsuperuser
+      && python manage.py runserver 0.0.0.0:8000
+      "
+    depends_on:
+      - ml_model

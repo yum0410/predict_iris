@@ -1,0 +1,88 @@
+# ---------------------
+# hostos is centos7.3
+# ---------------------
+FROM centos:7
+
+# ------------
+# adding user
+# ------------
+#RUN useradd -m python_user
+#RUN echo "python_user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+# WORKDIR /root
+# ENV HOME /root
+#USER python_user
+
+# ---------------------------------
+# install packages on centos
+# ---------------------------------
+RUN yum -y update
+RUN yum -y install epel-release; yum clean all
+RUN yum -y install wget sudo vim python-pip; yum clean all
+
+# ----------------
+# Install libraries
+# ----------------
+RUN yum -y install zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel
+RUN yum -y install \
+  git \
+  libssl-dev \
+  libbz2-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  g++ \
+  build-essential \
+  curl \
+  python-dev \
+  graphviz \
+  mecab \
+  libmecab-dev \
+  mecab-ipadic \
+  mecab-ipadic-utf8 \
+  wget \
+  language-pack-ja-base \
+  language-pack-ja \
+  tmux \
+  gcc \
+  gcc-c++ \
+  patch \
+  make \
+  libXdmcp-devel \
+  libXext-devel \
+  libX11-devel
+
+# --------------
+# install pyenv
+# --------------
+RUN git clone https://github.com/yyuu/pyenv.git ~/.pyenv
+ENV HOME /root
+ENV PYENV_ROOT $HOME/.pyenv
+ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+ENV LANG en_US.utf-8
+
+# ENV PATH $PYENV_ROOT/bin:$PATH
+
+## ----------------
+## install python3
+## ----------------
+RUN pyenv install -v 3.6.1
+RUN pyenv global 3.6.1
+RUN pyenv rehash
+ENV eval "$(pyenv init -)"
+
+RUN pip install --upgrade pip
+# --------------------------------
+# install modules on python
+# --------------------------------
+RUN pip install scrapy
+RUN pip install pandas
+RUN pip install seaborn
+RUN pip install scikit-learn
+RUN pip install pystan
+RUN pip install pymongo
+RUN pip install nimfa
+RUN pip install tensorflow
+RUN pip install keras
+RUN pip install jupyter
+RUN pip install hyperopt
+RUN pip install mlflow
+RUN pip install sqlalchemy
