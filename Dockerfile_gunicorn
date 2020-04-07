@@ -1,0 +1,20 @@
+FROM python:3.8.0-alpine
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN pip install --upgrade pip
+RUN pip install Django==2.2
+RUN pip install djangorestframework==3.9.2
+RUN pip install gunicorn==20.0.4
+RUN pip install Markdown==3.1
+RUN pip install MarkupSafe==1.1.1
+RUN pip install django-filter==2.1.0
+RUN pip install django-cors-headers==2.5.2
+RUN pip install requests==2.18.4
+RUN pip install django-widgets-improved==1.5.0
+
+WORKDIR /usr/src/app/
+
+RUN mkdir -p /var/run/gunicorn
+RUN apk --no-cache add curl

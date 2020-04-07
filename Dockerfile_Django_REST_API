@@ -5,17 +5,12 @@ RUN apt-get -y install vim
 
 RUN pip install django==2.1.7
 RUN pip install djangorestframework==3.9.2
+RUN pip install django-rest-swagger==2.2.0
 RUN pip install psycopg2==2.7.6
 RUN pip install psycopg2-binary==2.7.7
 RUN pip install django-cors-headers==2.5.2
-RUN pip install django-filter
+RUN pip install django-filter==2.1.0
+RUN pip install scikit-learn==0.20.1
 
-
-## ----------------
-## create Django App
-## ----------------
-
-RUN django-admin startproject django_rest_framework
-WORKDIR /django_rest_framework
-RUN python manage.py startapp predict_iris
-
+RUN mkdir code
+RUN mkdir ml_model

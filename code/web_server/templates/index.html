@@ -1,0 +1,51 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predict Iris</title>
+    <link rel="stylesheet" href="{% static 'iris_css/base.css' %}">
+</head>
+
+<body>
+    <p class="base_image title">Predict Iris</p>
+    <form action="" method="post">
+    <a class="input">
+        {% for field in form %}
+            <div class="label_box">
+                <p class="base_image label_text">{{ field.label }}</p>
+            </div>
+            <div class="label_box">
+                <p class="base_image textbox">{{ field }}</p>
+            </div>
+        {% endfor %}
+    </a>
+        {% csrf_token %}
+        <p class="predict_box">
+            <input class="predict_button" type="submit" value="predict">
+        </p>
+    </form>
+    <br>
+
+    {% if result == 0 %}
+    <div class="result_box">
+        <div class="base_image title">Setosa</div>
+        <img src="/media/images/Setosa.jpeg">
+        <p class="base_image">Setosa</p>
+    </div>
+    {% elif result == 1 %}
+    <div class="result_box">
+        <div class="base_image title">Versicolor</div>
+        <img src="/media/images/Versicolor.jpeg">
+    </div>
+    {% elif result == 2 %}
+    <div class="result_box">
+        <div class="base_image title">Virginica</div>
+        <img src="/media/images/Virginica.jpeg">
+    {% endif %}
+    </div>
+
+</body>
+
+</html>

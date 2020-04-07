@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa');
+
+
+.base_image {
+    font-family: 'Comfortaa';
+    font-style: normal;
+    font-weight: normal;
+    color: #000000;
+}
+
+.title {
+    width: 100%;
+    font-size: 36px;
+    line-height: 40px;
+    align-items: center;
+    text-align: center;
+}
+
+.input-box:after{
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.label_box{
+    float: left;
+    width: 50%;
+}
+
+.label_text{
+    font-size: 24x;
+    line-height: 27px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.textbox{
+    background: #FFFFFF;
+    border: 2px solid #000000;
+    box-sizing: border-box;
+    line-height: 27px;
+    float: left;
+    width: 120px;
+}
+
+.predict_box{
+    text-align:center;
+}
+
+.predict_button{
+    background: #000000;
+    border: 2px solid #000000;
+    border-radius: 6px;    
+    font-size: 24px;
+    line-height: 27px;
+    color: #FFFFFF;
+}
+
+.result_box img{
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 250px;
+    height: auto;
+}
+
+.result_box p{
+    text-align: center;
+    font-size: 24x;
+}

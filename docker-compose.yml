@@ -1,37 +1,79 @@
 version: '3'
 services:
-  ml_model:
-    container_name: predict_iris_ml_model
-    build:
-        context: .
-        dockerfile: Dockerfile_ML_model
-    tty: true
-    volumes:
-        - ./code/ML_model:/code
-    ports:
-        - "5001:5001"      
-    command: > 
-      bash -c "mkdir -p /share/mlflow
-      && python /code/create_model.py
-      && mlflow models serve -m /share/mlflow/0/*/artifacts/dicision_tree/ --host localhost --port 5001 --no-conda
-      "
+#   ml_model:
+#     container_name: predict_iris_ml_model
+#     build:
+#         context: .
+#         dockerfile: Dockerfile_ML_model
+#     volumes:
+#         - ./code/ML_model:/code
+#     ports:
+#         - "5001:5001"
+#     command: > 
+#       bash -c "mkdir -p /share/mlflow
+#       && python /code/create_model.py
+#       "
   rest_api:
     container_name: predict_iris_django_rest_api
     build:
         context: .
         dockerfile: Dockerfile_Django_REST_API
-    tty: true
     volumes:
       - ./code/Django_REST_API:/code
+      - ./code/ML_model:/ml_model 
+    tty: true
+    ports:
+      - "5000:5000"
+    command: > 
+      bash -c "cp -r /code/django_rest_framework /
+      && cd /django_rest_framework
+      && python manage.py runserver 0.0.0.0:5000
+      "
+    networks: 
+        app_net:
+            ipv4_address: 192.168.100.100
+
+  gunicorn:
+    container_name: predict_iris_gunicorn
+    build:
+        context: .
+        dockerfile: Dockerfile_gunicorn
+    volumes: 
+      - ./code/web_server:/usr/src/app/
+      - gunicorn:/var/run/gunicorn
+    tty: true
     ports:
       - "8000:8000"
     command: >
-      bash -c "cp /code/predict_iris/models.py /django_rest_framework/predict_iris/models.py
-      && cp /code/django_rest_framework/settings.py /django_rest_framework/django_rest_framework/settings.py
-      && python manage.py makemigrations
-      && python manage.py migrate
-      && python manage.py createsuperuser
-      && python manage.py runserver 0.0.0.0:8000
+      ash -c "
+      gunicorn predict_iris.wsgi --bind=unix:/var/run/gunicorn/gunicorn.sock
       "
+    networks: 
+        app_net:
+            ipv4_address: 192.168.100.101
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.17.7
     depends_on:
-      - ml_model
+      - gunicorn
+    ports:
+      - "80:80"
+    volumes:
+      - ./code/web_server/gunicorn.conf:/etc/nginx/conf.d/default.conf
+      - gunicorn:/var/run/gunicorn
+      - ./code/web_server/static:/tmp/web_server/static/
+    networks: 
+        app_net:
+            ipv4_address: 192.168.100.102
+
+volumes:
+  gunicorn:
+    driver: local
+
+networks:  
+  app_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
